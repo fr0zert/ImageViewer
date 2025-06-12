@@ -10,12 +10,12 @@
 
 - **Language**: C/C++  
 - **Frameworks**: raylib (current implementation)
-- **Planned(unsure)**: SDL3/Win API, Vulkan for cross-platform support 
+- **Planned(unsure)**: SDL3/Win API, Vulkan for cross-platform support
 - **Build System**: CMake 4.0.2 + Clang/LLVM (Clang-cl 20.1.6)
 
 ---
 
-🚧 Roadmap
+## 🚧 Roadmap
 
 - [x] Basic image loading and rendering
 - [ ] Semi-transparent background
@@ -27,6 +27,15 @@
 - [ ] Image rotation
 - [ ] Smooth animations
 - [ ] macOS/Linux support (i hope)
+- [ ] ...
+
+---
+
+## ⌨️ Current shortcuts
+
+- `Ctrl + W` - Close Window
+- `Ctrl + D` - Toggle Display fps
+- ...
 
 ---
 
