@@ -4,7 +4,7 @@ ImageHandler::ImageHandler(const char* imagePath, int screenWidth, int screenHei
     this->screenWidth = screenWidth;
     this->screenHeight = screenHeight;
     this->texture = LoadTexture(imagePath);
-
+    this->initialZoom = initialZoom;
     // for future: PNGs dont need to be blurry
     SetTextureFilter(texture, TEXTURE_FILTER_BILINEAR);
 
@@ -31,14 +31,40 @@ void ImageHandler::HandleZoom(float wheel) {
 void ImageHandler::DrawImage() {
     float destWidth = texture.width * currentScale;
     float destHeight = texture.height * currentScale;
-    float destX = (screenWidth - destWidth) / 2;
-    float destY = (screenHeight - destHeight) / 2;
+    float destX = (screenWidth - destWidth) / 2 + imageOffset.x;
+    float destY = (screenHeight - destHeight) / 2 + imageOffset.y;
 
     Rectangle source = {0.0f, 0.0f, (float)texture.width, (float)texture.height};
-    Rectangle dest = {destX, destY, destWidth, destHeight};
+    dest = {destX, destY, destWidth, destHeight};
     Vector2 origin = {0.0f, 0.0f};
 
     DrawTexturePro(texture, source, dest, origin, 0.0f, WHITE);
 }
 
-void ImageHandler::HandleMouseMovement() {}
+void ImageHandler::HandleMouseMovement(Vector2 mousePosition) {
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(mousePosition, dest)) {
+        dragging = true;
+        dragStart = mousePosition;
+        offsetStart = imageOffset;
+    }
+    if (dragging && IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
+        Vector2 delta = Vector2Subtract(mousePosition, dragStart);
+        imageOffset = Vector2Add(offsetStart, delta);
+    }
+    if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
+        dragging = false;
+    }
+}
+
+void ImageHandler::ResetImagePosition() {
+    imageOffset = {0, 0};
+    dragStart = {0, 0};
+    offsetStart = {0, 0};
+    dragging = false;
+}
+
+void ImageHandler::ResetImagePositionAndZoom() {
+    ResetImagePosition();
+    currentScale = baseScale * initialZoom;
+    targetScale = currentScale;
+}

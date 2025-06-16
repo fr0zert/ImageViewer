@@ -18,8 +18,8 @@
 ## 🚧 Roadmap
 
 - [x] Basic image loading and rendering
-- [ ] Semi-transparent background
-- [ ] Image zoom&move around on screen
+- [x] Semi-transparent background
+- [x] Image zoom&move around on screen
 - [ ] Support for PNG, JPEG, WebP etc.
 - [ ] Arrow image navigation (inside app)
 - [ ] Cool UI?
@@ -35,6 +35,8 @@
 
 - `Ctrl + W` - Close Window
 - `Ctrl + D` - Toggle Display fps
+- `SPACE` - Reset image position
+- `R` - Reset image position and zoom
 - ...
 
 ---

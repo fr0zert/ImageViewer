@@ -24,7 +24,8 @@ int main(int argc, char* argv[]) {
     ImageHandler initImage(argv[1], screenWidth, screenHeight, Settings::initialZoom);
 
     while (!WindowShouldClose()) {
-        float wheel = GetMouseWheelMove();
+        float wheelMove = GetMouseWheelMove();
+        Vector2 mousePosition = GetMousePosition();
         if (IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) {
             if (IsKeyPressed(KEY_W)) {
                 break;
@@ -33,11 +34,15 @@ int main(int argc, char* argv[]) {
                 drawDebugInfo = !drawDebugInfo;
             }
         }
+        if (IsKeyPressed(KEY_SPACE)) initImage.ResetImagePosition();
+        if (IsKeyPressed(KEY_R)) initImage.ResetImagePositionAndZoom();
+
         // Handle zoom with mouse wheel
-        initImage.HandleZoom(wheel);
+        initImage.HandleMouseMovement(mousePosition);
+        initImage.HandleZoom(wheelMove);
 
         BeginDrawing();
-        ClearBackground({30, 30, 30, 126});
+        ClearBackground({0, 0, 0, 126});
         // Draw the image
         initImage.DrawImage();
         if (drawDebugInfo) DrawFPS(10, 10);

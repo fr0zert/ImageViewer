@@ -46,13 +46,14 @@ FetchContent_MakeAvailable(raylib)
 
 # src directory
 set(SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
+# src files
+file(GLOB SOURCE_FILES "${SOURCE_DIR}/*.cpp" "${SOURCE_DIR}/*.hpp" "${SOURCE_DIR}/*.c" "${SOURCE_DIR}/*.h")
 
 # Enable debug console on Debug build
-# TODO dont use filenames, group somehow
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  add_executable(${PROJECT_NAME} ${SOURCE_DIR}/main.cpp ${SOURCE_DIR}/ImageHandler.cpp) 
+  add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 else()
-  add_executable(${PROJECT_NAME} WIN32 ${SOURCE_DIR}/main.cpp ${SOURCE_DIR}/ImageHandler.cpp)
+  add_executable(${PROJECT_NAME} WIN32 ${SOURCE_FILES})
 endif()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
