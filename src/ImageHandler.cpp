@@ -5,6 +5,11 @@ ImageHandler::ImageHandler(const char* imagePath, int screenWidth, int screenHei
     this->screenHeight = screenHeight;
     this->texture = LoadTexture(imagePath);
     this->initialZoom = initialZoom;
+
+    // checks if the image is loaded
+    if (texture.id) {
+        isValidImage = true;
+    }
     // for future: PNGs dont need to be blurry
     SetTextureFilter(texture, TEXTURE_FILTER_BILINEAR);
 
@@ -29,6 +34,10 @@ void ImageHandler::HandleZoom(float wheel) {
 }
 
 void ImageHandler::DrawImage() {
+    if (!isValidImage) {
+        DrawText("Unsupported format", (screenWidth - MeasureText("Unsupported format", 40)) / 2, (screenHeight - 40) / 2, 40, RED);
+        return;
+    }
     float destWidth = texture.width * currentScale;
     float destHeight = texture.height * currentScale;
     float destX = (screenWidth - destWidth) / 2 + imageOffset.x;

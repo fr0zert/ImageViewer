@@ -15,6 +15,7 @@ class ImageHandler {
 
    private:
     Texture2D texture;
+    bool isValidImage = false;
     float baseScale;
     float currentScale;
     float targetScale;
