@@ -2,9 +2,13 @@ name: Build & publish project
 
 on:
   push:
-    branches: [ main ]
-    tags:
+      tags:
       - 'v*'
+      branches-ignore:
+      - '**'
+
+permissions:
+  contents: write
 
 jobs:
   build:
