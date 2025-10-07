@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.0.2)
+cmake_minimum_required(VERSION 3.31.6)
 
 project(ImageViewer VERSION 0.0.1 LANGUAGES CXX)
 
@@ -92,4 +92,5 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${FREEIMAGE_EXTRACT_DIR}/FreeImage/Dist/x64/FreeImage.dll"
         "$<TARGET_FILE_DIR:${PROJECT_NAME}>/FreeImage.dll"
+
 )
