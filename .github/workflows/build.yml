@@ -1,0 +1,75 @@
+name: Build & publish project
+
+on:
+  push:
+    branches: [ main ]
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Verify tools
+        run: |
+          clang-cl --version
+          cmake --version
+          7z --help
+
+      - name: Configure (Debug)
+        run: >
+          cmake
+          -DCMAKE_BUILD_TYPE=Debug
+          -DCMAKE_EXPORT_COMPILE_COMMANDS=TRUE
+          -DCMAKE_C_COMPILER="C:\Program Files\LLVM\bin\clang-cl.exe"
+          -DCMAKE_CXX_COMPILER="C:\Program Files\LLVM\bin\clang-cl.exe"
+          -S "${{ github.workspace }}"
+          -B "${{ github.workspace }}\build"
+          -G "Ninja"
+
+      - name: Build (Debug)
+        run: >
+          cmake
+          --build "${{ github.workspace }}\build"
+          --config Debug
+          --target all
+
+      - name: Configure (Release)
+        if: success()
+        run: >
+          cmake
+          -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_EXPORT_COMPILE_COMMANDS=TRUE
+          -DCMAKE_C_COMPILER="C:\Program Files\LLVM\bin\clang-cl.exe"
+          -DCMAKE_CXX_COMPILER="C:\Program Files\LLVM\bin\clang-cl.exe"
+          -S "${{ github.workspace }}"
+          -B "${{ github.workspace }}\build"
+          -G "Ninja"
+
+      - name: Build (Release)
+        run: >
+          cmake
+          --build "${{ github.workspace }}\build"
+          --config Release
+          --target all
+
+      - name: Package builds
+        run: |
+          7z a ImageViewer_debug.zip .\output\Debug\*
+          7z a ImageViewer_release.zip .\output\Release\*
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "ImageViewer ${{ github.ref_name }}"
+          body_path: FEATURES.md
+          files: |
+            ImageViewer_debug.zip
+            ImageViewer_release.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
