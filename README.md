@@ -9,8 +9,7 @@
 ## ⚙️ Tech Stack
 
 - **Language**: C/C++  
-- **Frameworks**: raylib (current implementation)
-- **Planned(unsure)**: SDL3/Win API, Vulkan for cross-platform support
+- **Frameworks/Libs**: raylib (current implementation), FreeImage
 - **Build System**: CMake 4.0.2 + Clang/LLVM (Clang-cl 20.1.6)
 
 ---
@@ -20,13 +19,12 @@
 - [x] Basic image loading and rendering
 - [x] Semi-transparent background
 - [x] Image zoom&move around on screen
-- [ ] Support for PNG, JPEG, WebP etc.
+- [x] Support for PNG, JPEG, WebP etc.
 - [ ] Arrow image navigation (inside app)
 - [ ] Cool UI?
 - [ ] Settings
 - [ ] Image rotation
 - [ ] Smooth animations
-- [ ] macOS/Linux support (i hope)
 - [ ] ...
 
 ---
@@ -46,3 +44,4 @@
 ```sh
 TODO
 ```
+
