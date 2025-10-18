@@ -37,6 +37,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Restore cached Primes
+        id: cache-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ${{ github.workspace }}\build\_deps\FreeImage
+            ${{ github.workspace }}\build\FreeImage3180Win32Win64.zip
+            ${{ github.workspace }}\build\_deps\raylib-src
+            ${{ github.workspace }}\build\_deps\raylib-build
+          key: ${{ runner.os }}-build-cache-${{ hashFiles('CMakeLists.txt') }}
+
       - name: Verify tools
         run: |
           clang-cl --version
@@ -79,6 +90,19 @@ jobs:
           --build "${{ github.workspace }}\build"
           --config Release
           --target all
+
+      - name: Save Primes
+        if: steps.cache-restore.outputs.cache-hit != 'true'
+        id: cache-save
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ${{ github.workspace }}\build\_deps\FreeImage
+            ${{ github.workspace }}\build\FreeImage3180Win32Win64.zip
+            ${{ github.workspace }}\build\_deps\raylib-src
+            ${{ github.workspace }}\build\_deps\raylib-build
+          key: ${{ runner.os }}-build-cache-${{ hashFiles('CMakeLists.txt') }}
+
 
       - name: Package builds
         if: github.event_name == 'release' && github.event.action == 'published'
