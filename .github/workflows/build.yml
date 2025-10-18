@@ -12,6 +12,8 @@ on:
     tags-ignore:
       - '*'
   pull_request:
+    branches:
+      - main
     paths:
       - 'src/**'
       - '.github/workflows/build.yml'
