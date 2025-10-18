@@ -1,6 +1,18 @@
 cmake_minimum_required(VERSION 3.31.6)
 
-project(ImageViewer VERSION 0.0.1 LANGUAGES CXX)
+if(DEFINED ENV{PROGRAM_VERSION} AND NOT "$ENV{PROGRAM_VERSION}" STREQUAL "")
+    set(VERSION $ENV{PROGRAM_VERSION})
+else()
+    set(VERSION 0.0.0)
+    message(STATUS "Local build (version not specified)")
+endif()
+
+project(ImageViewer VERSION ${VERSION} LANGUAGES CXX)
+
+set(COMPANY_NAME "fr0zert")
+set(PRODUCT_NAME "${PROJECT_NAME}")
+set(FILE_DESCRIPTION "A simple ${PROJECT_NAME} appcation.")
+
 
 # Generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -11,7 +23,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Out folder for ready executables
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/output/${CMAKE_BUILD_TYPE}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/output/${CMAKE_BUILD_TYPE}/${PROJECT_NAME}")
 
 # static linking windows libs so i can distribute it without any dependencies for testing
 # cl alternatives to /MT and /MTd
@@ -55,7 +67,6 @@ if(NOT EXISTS "${FREEIMAGE_EXTRACT_DIR}/FreeImage/Dist/x64/FreeImage.lib")
     endif()
 endif()
 
-
 # Include directories and libraries for FreeImage
 include_directories("${FREEIMAGE_EXTRACT_DIR}/FreeImage/Dist/x64")
 link_directories("${FREEIMAGE_EXTRACT_DIR}/FreeImage/Dist/x64")
@@ -75,8 +86,14 @@ FetchContent_MakeAvailable(raylib)
 
 # src directory
 set(SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
+
+configure_file(
+    "${SOURCE_DIR}/metadata/version.rc.in"
+    "${SOURCE_DIR}/metadata/version.rc"
+    @ONLY
+)
 # src files
-file(GLOB SOURCE_FILES "${SOURCE_DIR}/*.cpp" "${SOURCE_DIR}/*.hpp" "${SOURCE_DIR}/*.c" "${SOURCE_DIR}/*.h")
+file(GLOB SOURCE_FILES "${SOURCE_DIR}/*.cpp" "${SOURCE_DIR}/*.hpp" "${SOURCE_DIR}/*.c" "${SOURCE_DIR}/*.h" "${SOURCE_DIR}/metadata/version.rc")
 
 # Enable debug console on Debug build
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -92,5 +109,4 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${FREEIMAGE_EXTRACT_DIR}/FreeImage/Dist/x64/FreeImage.dll"
         "$<TARGET_FILE_DIR:${PROJECT_NAME}>/FreeImage.dll"
-
 )
