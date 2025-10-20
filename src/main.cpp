@@ -1,4 +1,5 @@
 
+#include <FreeImage.h>
 #include <filesystem>
 #include <iostream>
 #include <raylib.h>
@@ -14,6 +15,10 @@ namespace Settings {
 } // namespace Settings
 
 int main(int argc, char *argv[]) {
+  FreeImage_Initialise();
+#ifdef _DEBUG
+  TraceLog(LOG_INFO, "FreeImage version %s", FreeImage_GetVersion());
+#endif
   if (argc <= 1) return 1;
   std::filesystem::path workingDir = std::filesystem::current_path(); // get current working directory
   SetConfigFlags(FLAG_WINDOW_UNDECORATED | FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_MAXIMIZED | FLAG_VSYNC_HINT);
@@ -48,5 +53,6 @@ int main(int argc, char *argv[]) {
     if (Settings::drawDebugInfo) DrawFPS(10, 10);
     EndDrawing();
   }
+  FreeImage_DeInitialise();
   CloseWindow();
 }
