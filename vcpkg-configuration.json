@@ -1,5 +1,4 @@
 {
-  "defaultTriplet": "x64-windows-static",
   "default-registry": {
     "kind": "git",
     "baseline": "f4fc135de213885b8d072203d324976e4aa1f171",
