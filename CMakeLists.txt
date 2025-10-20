@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.31.6)
 
-set(VCPKG_TARGET_TRIPLET "x64-windows-static-md" CACHE STRING "Vcpkg target triplet" FORCE)
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>" CACHE STRING "" FORCE)
+
+set(VCPKG_TARGET_TRIPLET "x64-windows-static" CACHE STRING "Vcpkg target triplet" FORCE)
 set(VCPKG_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING "Vcpkg build type" FORCE)
 
 if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
