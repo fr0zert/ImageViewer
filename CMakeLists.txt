@@ -8,11 +8,13 @@ set(VCPKG_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING "Vcpkg build type" FORCE
 
 if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
   if(DEFINED ENV{VCPKG_ROOT})
-    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}\\scripts\\buildsystems\\vcpkg.cmake"
-        CACHE STRING "Vcpkg toolchain file" FORCE)
+    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}\\scripts\\buildsystems\\vcpkg.cmake" CACHE STRING "Vcpkg toolchain file" FORCE)
     message(STATUS "Using vcpkg toolchain from: $ENV{VCPKG_ROOT}")
+  elseif(DEFINED ENV{VCPKG_INSTALLATION_ROOT})
+    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_INSTALLATION_ROOT}\\scripts\\buildsystems\\vcpkg.cmake" CACHE STRING "Vcpkg toolchain file" FORCE)
+    message(STATUS "Using vcpkg toolchain from: $ENV{VCPKG_INSTALLATION_ROOT}")
   else()
-    message(WARNING "VCPKG_ROOT not set — vcpkg will not be used.")
+    message(WARNING "VCPKG_ROOT or VCPKG_INSTALLATION_ROOT not set - vcpkg will not be used.")
   endif()
 endif()
 
