@@ -1,23 +1,7 @@
-name: Build & publish project
+name: Build & Publish project
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - 'src/**'
-      - '.github/workflows/build.yml'
-      - 'CMakeLists.txt'
-    tags-ignore:
-      - '*'
-  pull_request:
-    branches:
-      - main
-    paths:
-      - 'src/**'
-      - '.github/workflows/build.yml'
-      - 'CMakeLists.txt'
   release:
     types: [published]
 
@@ -42,11 +26,8 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: |
-            ${{ github.workspace }}\build\_deps\FreeImage
-            ${{ github.workspace }}\build\FreeImage3180Win32Win64.zip
-            ${{ github.workspace }}\build\_deps\raylib-src
-            ${{ github.workspace }}\build\_deps\raylib-build
-          key: ${{ runner.os }}-build-cache-${{ hashFiles('CMakeLists.txt') }}
+            ${{ github.workspace }}\build
+          key: ${{ runner.os }}-build-cache-${{ hashFiles('CMakeLists.txt', 'vcpkg.json') }}
 
       - name: Verify tools
         run: |
@@ -72,7 +53,6 @@ jobs:
           --target all
 
       - name: Configure (Release)
-        if: success() && github.event_name == 'release' && github.event.action == 'published'
         run: >
           cmake
           -DCMAKE_BUILD_TYPE=Release
@@ -84,7 +64,6 @@ jobs:
           -G "Ninja"
 
       - name: Build (Release)
-        if: success() && github.event_name == 'release' && github.event.action == 'published'
         run: >
           cmake
           --build "${{ github.workspace }}\build"
@@ -97,12 +76,8 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: |
-            ${{ github.workspace }}\build\_deps\FreeImage
-            ${{ github.workspace }}\build\FreeImage3180Win32Win64.zip
-            ${{ github.workspace }}\build\_deps\raylib-src
-            ${{ github.workspace }}\build\_deps\raylib-build
-          key: ${{ runner.os }}-build-cache-${{ hashFiles('CMakeLists.txt') }}
-
+            ${{ github.workspace }}\build
+          key: ${{ runner.os }}-build-cache-${{ hashFiles('CMakeLists.txt', 'vcpkg.json') }}
 
       - name: Package builds
         if: github.event_name == 'release' && github.event.action == 'published'
@@ -110,13 +85,21 @@ jobs:
           7z a ImageViewer_debug-${{ github.event.release.tag_name }}.zip .\output\Debug\*
           7z a ImageViewer_release-${{ github.event.release.tag_name }}.zip .\output\Release\*
 
-      - name: Publish GitHub Release
+      - name: Conventional Changelog Action
         if: github.event_name == 'release' && github.event.action == 'published'
+        id: changelog
+        uses: TriPSs/conventional-changelog-action@v5
+        with:
+          github-token: ${{ secrets.github_token }}
+          output-file: "false"
+
+      - name: Publish GitHub Release
+        if: ${{ steps.changelog.outputs.skipped == 'false' }} && github.event_name == 'release' && github.event.action == 'published'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.release.tag_name }}
           name: "ImageViewer ${{ github.event.release.tag_name }}"
-          body_path: FEATURES.md
+          body: ${{ steps.changelog.outputs.clean_changelog }}
           files: |
             ImageViewer_release-${{ github.event.release.tag_name }}.zip
             ImageViewer_debug-${{ github.event.release.tag_name }}.zip
