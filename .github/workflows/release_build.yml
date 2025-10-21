@@ -20,7 +20,18 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
+        with:
+          fetch-depth: 0
+      
+      - name: Conventional Changelog Action
+        if: github.event_name == 'release' && github.event.action == 'published'
+        id: changelog
+        uses: TriPSs/conventional-changelog-action@v5
+        with:
+          github-token: ${{ secrets.github_token }}
+          skip-commit: "true"
+          output-file: "false"
+      
       - name: Restore cached Primes
         id: cache-restore
         uses: actions/cache/restore@v4
@@ -84,15 +95,6 @@ jobs:
         run: |
           7z a ImageViewer_debug-${{ github.event.release.tag_name }}.zip .\output\Debug\*
           7z a ImageViewer_release-${{ github.event.release.tag_name }}.zip .\output\Release\*
-
-      - name: Conventional Changelog Action
-        if: github.event_name == 'release' && github.event.action == 'published'
-        id: changelog
-        uses: TriPSs/conventional-changelog-action@v5
-        with:
-          github-token: ${{ secrets.github_token }}
-          skip-commit: "true"
-          output-file: "false"
 
       - name: Publish GitHub Release
         if: ${{ steps.changelog.outputs.skipped == 'false' }} && github.event_name == 'release' && github.event.action == 'published'
