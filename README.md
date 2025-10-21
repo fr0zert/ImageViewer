@@ -1,18 +1,16 @@
-# 🖼️ ImageViewer
+<h1 align="center">🌄 ImageViewer</h1>
 
 > **ImageViewer** — inspired by Google's [Picasa Image Viewer](https://en.wikipedia.org/wiki/Picasa).
 
 (The name of the project may change in the future.)
 
----
-
 ## ⚙️ Tech Stack
 
-- **Language**: C/C++  
-- **Frameworks/Libs**: raylib (current implementation), FreeImage
-- **Build System**: CMake 4.0.2 + Clang/LLVM (Clang-cl 20.1.6)
-
----
+ <ul>
+  <li><b>Language: </b>C/C++</li>
+  <li><b>Frameworks/Libs: </b>raylib, FreeImage</li>
+  <li><b>Build System: </b>CMake + vcpkg + Clang/LLVM (Clang-cl)</li>
+</ul> 
 
 ## 🚧 Roadmap
 
