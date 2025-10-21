@@ -20,17 +20,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      
-      - name: Conventional Changelog Action
-        if: github.event_name == 'release' && github.event.action == 'published'
-        id: changelog
-        uses: TriPSs/conventional-changelog-action@v5
-        with:
-          github-token: ${{ secrets.github_token }}
-          skip-commit: "true"
-          output-file: "false"
       
       - name: Restore cached Primes
         id: cache-restore
@@ -97,12 +86,11 @@ jobs:
           7z a ImageViewer_release-${{ github.event.release.tag_name }}.zip .\output\Release\*
 
       - name: Publish GitHub Release
-        if: ${{ steps.changelog.outputs.skipped == 'false' }} && github.event_name == 'release' && github.event.action == 'published'
+        if: github.event_name == 'release' && github.event.action == 'published'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.release.tag_name }}
           name: "ImageViewer ${{ github.event.release.tag_name }}"
-          body: ${{ steps.changelog.outputs.clean_changelog }}
           files: |
             ImageViewer_release-${{ github.event.release.tag_name }}.zip
             ImageViewer_debug-${{ github.event.release.tag_name }}.zip
