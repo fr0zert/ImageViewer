@@ -91,7 +91,7 @@ jobs:
         uses: TriPSs/conventional-changelog-action@v5
         with:
           github-token: ${{ secrets.github_token }}
-          git-branch: 'main'
+          skip-commit: "true"
           output-file: "false"
 
       - name: Publish GitHub Release
