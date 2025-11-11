@@ -23,8 +23,6 @@
 - [ ] Smooth animations-->
 - [ ] ...
 
----
-
 ## ⌨️ Current shortcuts
 
 - `ESC` or `Q` - Close Window
@@ -32,8 +30,6 @@
 <!--- `SPACE` - Reset image position
 - `R` - Reset image position and zoom-->
 - ...
-
----
 
 ## 📦 Build
 
