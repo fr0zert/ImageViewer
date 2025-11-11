@@ -1,0 +1,22 @@
+{
+  "dependencies": [
+    {
+      "name": "sdl3",
+      "default-features": false
+    },
+    {
+      "name": "sail",
+      "features": ["all"]
+    }
+  ],
+  "overrides": [
+    {
+      "name": "sdl3",
+      "version": "3.2.26#0"
+    },
+    {
+      "name": "sail",
+      "version": "0.9.10#0"
+    }
+  ]
+}

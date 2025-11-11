@@ -1,0 +1,4 @@
+Language: Cpp
+BasedOnStyle: LLVM
+TabWidth: 2
+ColumnLimit: 120
