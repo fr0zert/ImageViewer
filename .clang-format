@@ -1,8 +1,0 @@
-Language: Cpp
-BasedOnStyle: LLVM
-IndentWidth: 2
-MaxEmptyLinesToKeep: 1
-NamespaceIndentation: All
-PointerAlignment: Right
-ColumnLimit: 0
-AllowShortIfStatementsOnASingleLine: WithoutElse

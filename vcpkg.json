@@ -1,9 +1,0 @@
-{
-  "dependencies": [
-    {
-      "name": "raylib",
-      "default-features": false
-    },
-    "freeimage"
-  ]
-}
