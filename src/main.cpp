@@ -45,7 +45,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
   }
   // ASPECT RATIO STUFF (for later maybe)
   // SDL_SetRenderLogicalPresentation(renderer, 640, 480, SDL_LOGICAL_PRESENTATION_DISABLED);
-
+  SDL_SetWindowResizable(state->window, false);
   // VSYNC
   SDL_SetRenderVSync(state->renderer, 1);
   // Init debug panel
