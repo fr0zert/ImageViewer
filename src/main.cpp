@@ -1,138 +1,89 @@
-#include <SDL3/SDL_render.h>
 #define SDL_MAIN_USE_CALLBACKS 1 /* use the callbacks instead of main() */
-#include "AppState.h"
-#include "DebugPanel.h"
-#include "EventHandler.h"
-#include "ImageHandler.h"
+#include "DebugOverlay.hpp"
+#include "Renderer.hpp"
+#include "Window.hpp"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
-#include <sail-c++/sail-c++.h>
+#include <SDL3/SDL_render.h>
+#include <memory>
 
-// `ImageViewerState` is defined in `AppState.h` and embeds `DebugPanelState` by value.
+// TODO: move out of main file
+struct AppState {
+  std::unique_ptr<Window> window;
+  std::unique_ptr<Renderer> renderer;
+  std::unique_ptr<DebugPanel> debug_panel;
+};
 
+/* This function runs once at startup. */
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
-  // Init AppMetaData
-  // need expand later for all OSs
-  // SDL_SetAppMetadata("Example Renderer Clear", "1.0", "com.example.renderer-clear");
+  // TODO: Init AppMetadata
+  // TODO: Expand AppMetadata
+  // SDL_SetAppMetadata("Example", "1.0", "com.example.example-app");
 
-  // Init AppState
-  ImageViewerState *state = static_cast<ImageViewerState *>(SDL_calloc(1, sizeof(ImageViewerState)));
-  if (!state) {
-    SDL_Log("Couldn't initialize SDL appstate");
-    return SDL_APP_FAILURE;
-  }
-  *appstate = state;
-
-  // INIT SDL
   if (!SDL_Init(SDL_INIT_VIDEO)) {
-    SDL_Log("SDL_Init failed: %s", SDL_GetError());
-    // free allocated state to avoid leak
-    SDL_free(state);
-    *appstate = nullptr;
+    SDL_Log("Couldn't initialize SDL: %s", SDL_GetError());
     return SDL_APP_FAILURE;
   }
 
-  // INIT Window and Renderer
-  if (!SDL_CreateWindowAndRenderer("examples/renderer/clear", 0, 0,
-                                   SDL_WINDOW_RESIZABLE | SDL_WINDOW_BORDERLESS | SDL_WINDOW_TRANSPARENT |
-                                       SDL_WINDOW_MAXIMIZED,
-                                   &state->window, &state->renderer)) {
-    SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
-    SDL_Quit();
-    SDL_free(state);
-    *appstate = nullptr;
-    return SDL_APP_FAILURE;
-  }
-  // ASPECT RATIO STUFF (for later maybe)
-  // SDL_SetRenderLogicalPresentation(renderer, 640, 480, SDL_LOGICAL_PRESENTATION_DISABLED);
-  SDL_SetWindowResizable(state->window, false);
-  // VSYNC
-  SDL_SetRenderVSync(state->renderer, 1);
-  // Init debug panel
-  DebugPanel::InitDebugPanel(state->debugPanel);
+  auto state = std::make_unique<AppState>();
+  state->window = std::make_unique<Window>();
+  state->renderer = std::make_unique<Renderer>(state->window->GetWindow());
+  state->debug_panel = std::make_unique<DebugPanel>();
 
-  // If user passed a file path as the first argv, load it now and center it.
-  if (argc > 1 && argv[1] != nullptr) {
-    if (!ImageHandler::LoadTextureFromFile(state->renderer, std::string(argv[1]), state->image_texture,
-                                           &state->image_width, &state->image_height)) {
-      SDL_Log("Failed to load image from path: %s", argv[1]);
-      // continue without an image
-    } else {
-      // Center the image in the window
-      int win_w = 0, win_h = 0;
-      SDL_GetWindowSize(state->window, &win_w, &win_h);
-      state->image_x = (win_w - state->image_width) / 2;
-      state->image_y = (win_h - state->image_height) / 2;
-    }
-  }
+  SDL_SetRenderVSync(state->renderer->GetRenderer(), 1); // enable VSync
+
+  *appstate = state.release();
 
   return SDL_APP_CONTINUE;
 }
 
+/* This function runs when a new event (mouse input, keypresses, etc) occurs. */
 SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
-  ImageViewerState *state = static_cast<ImageViewerState *>(appstate);
-  if (event->type == SDL_EVENT_QUIT) {
-    return SDL_APP_SUCCESS;
-  }
+  if (event->type == SDL_EVENT_QUIT)
+    return SDL_APP_SUCCESS; /* exit */
 
-  if (event->type == SDL_EVENT_KEY_DOWN) {
-    return HandleEvents::HandleKeyEvents(event->key.scancode, *state);
+  AppState *state = static_cast<AppState *>(appstate);
+
+  switch (event->type) {
+  case SDL_EVENT_KEY_DOWN:
+    if (event->key.repeat) /* dont run in loop till key unpressed */
+      break;
+    if (event->key.scancode == SDL_SCANCODE_D)
+      state->debug_panel->ToggleDebugPanel();
+    break;
+  default:
+    break;
   }
 
   return SDL_APP_CONTINUE;
 }
 
+/* This function runs once per frame, and is the heart of the program. */
 SDL_AppResult SDL_AppIterate(void *appstate) {
-  // ----- AppState -----
-  ImageViewerState *state = static_cast<ImageViewerState *>(appstate);
+  AppState *state = static_cast<AppState *>(appstate);
+  /* debug_panel logic */
+  state->debug_panel->ProcessDebugPanel();
 
-  // ----- LOGIC -----
-  DebugPanel::ProcessDebug(state->debugPanel);
+  /* logic */
 
-  // ----- START (RENDER) -----
-  SDL_SetRenderDrawColorFloat(state->renderer, 0, 0, 0, 0.5f);
-  SDL_RenderClear(state->renderer);
+  /* ----- background ----- */
+  SDL_SetRenderDrawColorFloat(state->renderer->GetRenderer(), 0, 0, 0, 0.5f);
+  SDL_RenderClear(state->renderer->GetRenderer());
 
-  // Render loaded image (if any) centered at image_x/image_y (use float rect for SDL3)
-  if (state->image_texture) {
-    SDL_FRect dstf;
-    dstf.x = static_cast<float>(state->image_x);
-    dstf.y = static_cast<float>(state->image_y);
-    dstf.w = static_cast<float>(state->image_width);
-    dstf.h = static_cast<float>(state->image_height);
-    SDL_RenderTexture(state->renderer, state->image_texture, nullptr, &dstf);
-  }
+  /*  paint  */
 
-  // render debug panel on top
-  DebugPanel::RenderDebugPanel(state->renderer, state->debugPanel);
+  /* render debug_panel */
+  state->debug_panel->RenderDebugPanel(state->renderer->GetRenderer());
 
-  // ----- END (RENDER) -----
-  SDL_RenderPresent(state->renderer);
+  /* put new frame of screen */
+  SDL_RenderPresent(state->renderer->GetRenderer());
+
   return SDL_APP_CONTINUE;
 }
 
+/* This function runs once at shutdown. */
 void SDL_AppQuit(void *appstate, SDL_AppResult result) {
-
-  // If no app state was provided, still ensure SDL subsystems are shut down.
-  if (!appstate) {
-    SDL_Quit();
+  std::unique_ptr<AppState> state(static_cast<AppState *>(appstate));
+  if (!state)
     return;
-  }
-
-  ImageViewerState *state = static_cast<ImageViewerState *>(appstate);
-  if (state->renderer) {
-    SDL_DestroyRenderer(state->renderer);
-    state->renderer = nullptr;
-  }
-
-  if (state->window) {
-    SDL_DestroyWindow(state->window);
-    state->window = nullptr;
-  }
-
-  // DebugPanel is embedded by value in ImageViewerState; no manual free required.
-  SDL_free(appstate);
-
-  // Quit SDL subsystems last
-  SDL_Quit();
 }

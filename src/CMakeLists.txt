@@ -1,8 +1,8 @@
 set(SRC_FILES
   "main.cpp"
-  "DebugPanel.cpp"
-  "EventHandler.cpp"
-  "ImageHandler.cpp"
+  "Window.cpp"
+  "Renderer.cpp"
+  "DebugOverlay.cpp"
 )
 
 if(WIN32)
