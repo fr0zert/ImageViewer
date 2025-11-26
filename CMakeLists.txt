@@ -28,6 +28,9 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY
   "${CMAKE_CURRENT_SOURCE_DIR}/out/${CMAKE_BUILD_TYPE}/${PROJECT_NAME}")
 
 # dependencies
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(tomlplusplus REQUIRED IMPORTED_TARGET tomlplusplus)
+
 find_package(SailC++ CONFIG REQUIRED)
 find_package(SDL3 CONFIG REQUIRED)
 # add_subdirectory("dependencies")
