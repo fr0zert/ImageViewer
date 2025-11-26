@@ -1,22 +1,28 @@
 {
   "dependencies": [
     {
+      "name": "sail",
+      "features": ["all"]
+    },
+    {
       "name": "sdl3",
       "default-features": false
     },
-    {
-      "name": "sail",
-      "features": ["all"]
-    }
+    "tomlplusplus",
+    "pkgconf"
   ],
   "overrides": [
     {
       "name": "sdl3",
-      "version": "3.2.26#0"
+      "version": "3.2.26"
     },
     {
       "name": "sail",
-      "version": "0.9.10#0"
+      "version": "0.9.10"
+    },
+    {
+      "name": "tomlplusplus",
+      "version": "3.4.0"
     }
   ]
 }

@@ -1,7 +1,8 @@
 set(SRC_FILES
   "main.cpp"
-  "DebugPanel.cpp"
-  "EventHandler.cpp"
+  "Window.cpp"
+  "Renderer.cpp"
+  "DebugOverlay.cpp"
   "ImageHandler.cpp"
 )
 
@@ -15,7 +16,11 @@ endif()
 # Include the current source dir so headers in src/ resolve
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3 SAIL::sail-c++)
+target_link_libraries(${PROJECT_NAME} PRIVATE
+  SDL3::SDL3
+  SAIL::sail-c++
+  PkgConfig::tomlplusplus
+)
 
 if(WIN32)
   # On windows machines i think i want static link all stuff
