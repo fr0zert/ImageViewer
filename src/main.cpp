@@ -58,8 +58,10 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
   case SDL_EVENT_KEY_DOWN:
     if (event->key.repeat) /* dont run in loop till key unpressed */
       break;
-    if (event->key.scancode == SDL_SCANCODE_D)
+    if (event->key.scancode == SDL_SCANCODE_D) {
       state->debug_panel->ToggleDebugPanel();
+      return SDL_APP_CONTINUE;
+    }
     if (event->key.scancode == SDL_SCANCODE_ESCAPE || SDL_SCANCODE_Q)
       return SDL_APP_SUCCESS;
     break;
