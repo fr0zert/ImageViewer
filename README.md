@@ -13,33 +13,30 @@
 ## 🚧 Roadmap
 
 - [x] Semi-transparent background
-- [x] Basic image loading and rendering (WIP)
+- [x] Basic image loading and rendering
 - [x] Support for PNG, JPEG, WebP etc. (WIP)
-<!--- [ ] Image zoom&move around on screen
-- [ ] Arrow image navigation (inside app)
-- [ ] Cool UI?
+- [ ] Image zoom&move around on screen
 - [ ] Settings
+- [ ] Cool UI?
+- [ ] Arrow image navigation (inside app)
 - [ ] Image rotation
-- [ ] Smooth animations-->
+- [ ] Smooth animations
+- [ ] Linux
 - [ ] ...
 
 ## ⌨️ Current shortcuts
 
 - `ESC` or `Q` - Close Window
 - `D` - Toggle Debug info
-<!--- `SPACE` - Reset image position
-- `R` - Reset image position and zoom-->
 - ...
 
 ## 📦 Build
 
 Make sure you have installed: CMake, Ninja, vcpkg, Clang/LLVM
 
-My personal recommendation for windows users, use [scoop](https://scoop.sh), it will setup PATH values and etc for you.
+My personal recommendation for **windows** users, use [scoop](https://scoop.sh), it will setup PATH values and etc for you.
 
-Also on windows you need MSVC build headers/stdlibs etc. You can just install it anywhere via Visual Studio Installer.
-
-On linux it is should be base-devel or smth, not tested yet.
+<!--On linux it is should be base-devel or smth, not tested. (and not implemented yet)-->
 
 ```sh
 # faster download via scoop
@@ -47,6 +44,9 @@ scoop install aria2
 # tools
 scoop install main/cmake main/ninja main/vcpkg main/llvm
 ```
+
+> [!IMPORTANT]
+> Also on windows you need MSVC build headers/stdlibs etc. You can just install it anywhere via Visual Studio Installer.
 
 You have 4 options:
 
