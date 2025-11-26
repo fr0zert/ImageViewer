@@ -1,6 +1,6 @@
 <h1 align="center">🌄 ImageViewer</h1>
 
-> **ImageViewer** — inspired by Google's [Picasa Image Viewer](https://en.wikipedia.org/wiki/Picasa).
+> **ImageViewer** — inspired by Google's **_Picasa Image Viewer_** from [Picasa](https://en.wikipedia.org/wiki/Picasa).
 
 (The name of the project may change in the future.)
 
