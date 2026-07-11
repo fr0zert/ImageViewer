@@ -1,0 +1,9 @@
+{
+  "lsp": {
+    "clangd": {
+      "binary": {
+        "arguments": ["-compile-commands-dir=build/windows-debug"], // change it to the build type you runing
+      },
+    },
+  },
+}
