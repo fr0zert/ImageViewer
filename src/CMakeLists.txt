@@ -1,4 +1,4 @@
-qt_add_executable(${PROJECT_NAME}
+qt_add_executable(${PROJECT_NAME} MANUAL_FINALIZATION
     main.cpp
     ImageViewer.hpp
     ImageViewer.cpp

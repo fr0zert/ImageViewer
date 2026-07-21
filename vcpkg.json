@@ -3,11 +3,19 @@
     {
       "name": "qtbase",
       "default-features": false,
-      "features": ["doubleconversion", "freetype", "gui", "harfbuzz", "widgets"]
+      "features": ["doubleconversion", "widgets"]
     },
     {
       "name": "sail",
-      "features": ["all"]
+      "features": [
+        "highest-priority-codecs",
+        "high-priority-codecs",
+        "low-priority-codecs",
+        "heif",
+        "psd",
+        "raw",
+        "tiff"
+      ]
     }
   ]
 }
