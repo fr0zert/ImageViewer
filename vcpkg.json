@@ -3,7 +3,7 @@
     {
       "name": "qtbase",
       "default-features": false,
-      "features": ["doubleconversion", "widgets"]
+      "features": ["doubleconversion", "widgets", "concurrent"]
     },
     {
       "name": "sail",
