@@ -2,7 +2,7 @@
 
 A lightweight desktop image viewer inspired by Google Picasa. ImageViewer focuses on a fast, familiar, and simple workflow for viewing photos and supports a wide range of image formats.
 
-## Prerequisites
+## Build requirements
 
 - Windows 10 or 11
 - Visual Studio 2022 or newer (Desktop development with C++) / or just MS Build tools without VS
