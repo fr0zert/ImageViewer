@@ -1,27 +1,22 @@
 #pragma once
-#include <sail-c++/sail-c++.h>
-#include <sail-common/common_serialize.h>
 
-#include <QDebug>
-#include <QImage>
 #include <QMouseEvent>
-#include <QPaintEvent>
 #include <QPainter>
 #include <QPixmap>
-#include <QPoint>
-#include <QWheelEvent>
 #include <QWidget>
 
-class ImageHandler : public QWidget {
+class ImageConvas final : public QWidget {
   Q_OBJECT
 
 public:
-  explicit ImageHandler(QWidget *parent = nullptr);
-  bool loadImage(const QString &file_path);
+  explicit ImageConvas(QWidget *parent = nullptr);
+
+public slots:
+  void setImage(const QPixmap &image);
+  void clearImage();
 
 protected:
   bool event(QEvent *event) override;
-
   void paintEvent(QPaintEvent *event) override;
   void mousePressEvent(QMouseEvent *event) override;
   void mouseMoveEvent(QMouseEvent *event) override;
@@ -32,9 +27,9 @@ protected:
 private:
   void fitImage();
 
-  QPixmap pixmap_;
-  QPointF offset_;
-  double scale_ { 1.0 };
+  QPixmap image_;
+  double zoom_ { 1.0 };
+  QPointF offset_ { 0, 0 };
+  bool dragging_ { false };
   QPointF last_mouse_pos_;
-  bool is_dragging_ { false };
 };
