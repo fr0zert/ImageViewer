@@ -10,5 +10,6 @@ void ImageViewer::paintEvent(QPaintEvent *event) {
 
   QPainter painter(this);
   painter.setRenderHint(QPainter::Antialiasing);
+  // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers)
   painter.fillRect(rect(), QColor(0, 0, 0, 128));
 }

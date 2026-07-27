@@ -1,4 +1,7 @@
 #pragma once
+#include <sail-c++/sail-c++.h>
+#include <sail-common/common_serialize.h>
+
 #include <QDebug>
 #include <QImage>
 #include <QMouseEvent>
@@ -8,15 +11,13 @@
 #include <QPoint>
 #include <QWheelEvent>
 #include <QWidget>
-#include <sail-c++/sail-c++.h>
-#include <sail-common/common_serialize.h>
 
 class ImageHandler : public QWidget {
   Q_OBJECT
 
 public:
   explicit ImageHandler(QWidget *parent = nullptr);
-  bool loadImage(const QString &filePath);
+  bool loadImage(const QString &file_path);
 
 protected:
   bool event(QEvent *event) override;
@@ -31,9 +32,9 @@ protected:
 private:
   void fitImage();
 
-  QPixmap m_pixmap;
-  QPointF m_offset;
-  double m_scale = 1.0;
-  QPointF m_lastMousePos;
-  bool m_isDragging = false;
+  QPixmap pixmap_;
+  QPointF offset_;
+  double scale_ { 1.0 };
+  QPointF last_mouse_pos_;
+  bool is_dragging_ { false };
 };

@@ -1,20 +1,16 @@
 #include "ImageHandler.hpp"
 
-ImageHandler::ImageHandler(QWidget *parent) : QWidget(parent) {
-  setAttribute(Qt::WA_OpaquePaintEvent, false);
-}
+ImageHandler::ImageHandler(QWidget *parent) : QWidget(parent) { setAttribute(Qt::WA_OpaquePaintEvent, false); }
 
-bool ImageHandler::loadImage(const QString &filePath) {
-
-  sail::image image(filePath.toLocal8Bit().constData());
+bool ImageHandler::loadImage(const QString &file_path) {
+  sail::image image(file_path.toLocal8Bit().constData());
 
   if (!image.is_valid()) {
-    qWarning() << "Failed to load image via SAIL:" << filePath;
+    qWarning() << "Failed to load image via SAIL:" << file_path;
     return false;
   }
 
-  qInfo() << "Image pixel format"
-          << sail_pixel_format_to_string(image.pixel_format());
+  qInfo() << "Image pixel format" << sail_pixel_format_to_string(image.pixel_format());
 
   QImage::Format load_format = [format = image.pixel_format()] {
     switch (format) {
@@ -89,9 +85,9 @@ bool ImageHandler::loadImage(const QString &filePath) {
     load_format = QImage::Format_RGBA8888;
   }
 
-  QImage temp(reinterpret_cast<const uchar *>(image.pixels()), image.width(),
-              image.height(), image.bytes_per_line(), load_format);
-  m_pixmap = QPixmap::fromImage(temp);
+  QImage temp(static_cast<const uchar *>(image.pixels()), static_cast<int>(image.width()), static_cast<int>(image.height()),
+              image.bytes_per_line(), load_format);
+  pixmap_ = QPixmap::fromImage(temp);
 
   fitImage();
 
@@ -100,7 +96,7 @@ bool ImageHandler::loadImage(const QString &filePath) {
 }
 
 bool ImageHandler::event(QEvent *event) {
-  if (m_pixmap.isNull()) {
+  if (pixmap_.isNull()) {
     switch (event->type()) {
     case QEvent::MouseButtonPress:
     case QEvent::MouseButtonRelease:
@@ -126,30 +122,30 @@ void ImageHandler::paintEvent(QPaintEvent *event) {
   painter.setRenderHint(QPainter::Antialiasing);
   painter.setRenderHint(QPainter::SmoothPixmapTransform);
 
-  painter.translate(m_offset);
-  painter.scale(m_scale, m_scale);
-  painter.drawPixmap(0, 0, m_pixmap);
+  painter.translate(offset_);
+  painter.scale(scale_, scale_);
+  painter.drawPixmap(0, 0, pixmap_);
 }
 
 void ImageHandler::mousePressEvent(QMouseEvent *event) {
-  if (event->button() != Qt::LeftButton)
+  if (event->button() != Qt::LeftButton) {
     return;
+  }
 
-  QRectF imageRect(m_offset, QSizeF(m_pixmap.width() * m_scale,
-                                    m_pixmap.height() * m_scale));
+  QRectF image_rect(offset_, QSizeF(pixmap_.width() * scale_, pixmap_.height() * scale_));
 
-  if (imageRect.contains(event->position())) {
-    m_isDragging = true;
-    m_lastMousePos = event->position();
+  if (image_rect.contains(event->position())) {
+    is_dragging_ = true;
+    last_mouse_pos_ = event->position();
     event->accept();
   }
 }
 
 void ImageHandler::mouseMoveEvent(QMouseEvent *event) {
-  if (m_isDragging) {
-    QPointF currentPos = event->position();
-    m_offset += (currentPos - m_lastMousePos);
-    m_lastMousePos = currentPos;
+  if (is_dragging_) {
+    QPointF current_pos { event->position() };
+    offset_ += (current_pos - last_mouse_pos_);
+    last_mouse_pos_ = current_pos;
     update();
     event->accept();
   }
@@ -157,43 +153,43 @@ void ImageHandler::mouseMoveEvent(QMouseEvent *event) {
 
 void ImageHandler::mouseReleaseEvent(QMouseEvent *event) {
   if (event->button() == Qt::LeftButton) {
-    m_isDragging = false;
+    is_dragging_ = false;
     event->accept();
   }
 }
 
 void ImageHandler::wheelEvent(QWheelEvent *event) {
-  QPointF mousePos = event->position();
+  QPointF mouse_pos { event->position() };
 
-  QRectF imageRect(m_offset, QSizeF(m_pixmap.width() * m_scale,
-                                    m_pixmap.height() * m_scale));
+  QRectF image_rect(offset_, QSizeF(pixmap_.width() * scale_, pixmap_.height() * scale_));
 
-  QPointF zoomAnchor;
-  if (imageRect.contains(mousePos)) {
-    zoomAnchor = mousePos;
+  QPointF zoom_anchor {};
+  if (image_rect.contains(mouse_pos)) {
+    zoom_anchor = mouse_pos;
   } else {
-    zoomAnchor = imageRect.center();
+    zoom_anchor = image_rect.center();
   }
-
-  double factor = event->angleDelta().y() > 0 ? 1.1 : 1.0 / 1.1;
-  double newScale = std::clamp(m_scale * factor, 0.05, 20.0);
-  factor = newScale / m_scale;
-  m_offset = zoomAnchor - (zoomAnchor - m_offset) * factor;
-  m_scale = newScale;
+  // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers)
+  double factor { event->angleDelta().y() > 0 ? 1.1 : 1.0 / 1.1 };
+  // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers)
+  double new_scale { std::clamp(scale_ * factor, 0.05, 20.0) };
+  factor = new_scale / scale_;
+  offset_ = zoom_anchor - (zoom_anchor - offset_) * factor;
+  scale_ = new_scale;
 
   update();
   event->accept();
 }
 
-void ImageHandler::resizeEvent(QResizeEvent *) { fitImage(); }
+void ImageHandler::resizeEvent(QResizeEvent * /*event*/) { fitImage(); }
 
 void ImageHandler::fitImage() {
-  constexpr double margin = 0.90;
-  double scaleX = width() / static_cast<double>(m_pixmap.width());
-  double scaleY = height() / static_cast<double>(m_pixmap.height());
-  m_scale = std::min(scaleX, scaleY) * margin;
-  QSizeF scaledSize = QSizeF(m_pixmap.width(), m_pixmap.height()) * m_scale;
-  m_offset = QPointF((width() - scaledSize.width()) / 2.0,
-                     (height() - scaledSize.height()) / 2.0);
+  constexpr double MARGIN = 0.90;
+  double scale_x { width() / static_cast<double>(pixmap_.width()) };
+  double scale_y { height() / static_cast<double>(pixmap_.height()) };
+  scale_ = std::min(scale_x, scale_y) * MARGIN;
+  QSizeF scaled_size { QSizeF(pixmap_.width(), pixmap_.height()) * scale_ };
+  // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers)
+  offset_ = QPointF((width() - scaled_size.width()) / 2.0, (height() - scaled_size.height()) / 2.0);
   update();
 }
